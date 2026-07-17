@@ -1,37 +1,83 @@
-# SYJ-Nexus-Sentinel-Audit
+<div align="center">
 
-A lightweight, open-source security observability daemon for local networks.
+# 🛰️ SYJ-Nexus-Sentinel-Audit
 
-It answers one question continuously: **"What is actually connected to my
-network right now, and is it something I recognize?"**
+**A lightweight, open-source security observability daemon for local networks**
 
-It periodically reads your system's ARP/neighbor table, fingerprints every
-device it sees (MAC, IP, hostname), checks each one against a `whitelist.json`
-you control, and writes a daily `security_audit.json` report of connections,
-status changes, and anomalies. No agents on other machines, no cloud
-dependency, no heavy SIEM stack — just a local process and a local database.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-100%25-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Drizzle ORM](https://img.shields.io/badge/ORM-Drizzle-C5F74F?logo=drizzle&logoColor=black)](https://orm.drizzle.team/)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20Termux-informational)](#requirements)
+[![No Native Binaries](https://img.shields.io/badge/Native%20Binaries-0-success)](#highlights)
+[![Maintained by](https://img.shields.io/badge/Maintained%20by-Sayanjali%20Nexus-8A63D2)](https://github.com/SHalimoosavi)
 
-## Highlights
+*"What is actually connected to my network right now, and is it something I recognize?"*
 
-- **Zero native binaries.** Built entirely in TypeScript/JavaScript. Device
-  data is stored via [Drizzle ORM](https://orm.drizzle.team/) on top of
-  Node's built-in `node:sqlite` module — no `node-gyp`, no prebuilt binary
-  downloads. On older Node versions it falls back automatically to a plain
-  JSON file store with the same schema shape, so the tool never fails to run.
-- **Cross-platform.** Works on Linux, Windows, and Android via Termux, using
-  whatever native tool is available (`ip neigh`, `arp -a`).
-- **Whitelist-driven anomaly detection.** Anything not in `whitelist.json` is
-  flagged `unknown` and logged as a warning-severity event.
-- **Structured, append-only audit trail.** Every scan cycle, new device,
-  IP change, and anomaly is recorded and rolled up into a daily JSON report.
+</div>
 
-## Requirements
+---
 
-- Node.js 18 or later (Node **22.5+** recommended to use the built-in SQLite
-  backend; earlier versions automatically use the JSON fallback store).
-- One of `ip` (iproute2) or `arp` (net-tools) available on the host.
+## 📺 Demo
 
-## Installation
+<div align="center">
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  $ node dist/monitor.js                                         │
+│  ========================================                       │
+│   SYJ-Nexus-Sentinel-Audit — starting up                        │
+│    Storage backend : sqlite                                     │
+│    Mode            : continuous (every 60s)                     │
+│  ========================================                       │
+│  [monitor] 2026-07-18T10:00:00Z — scanned 6 device(s):          │
+│            5 known, 1 unknown, 1 newly seen. (backend: sqlite)  │
+│  [monitor] ⚠ 1 unrecognized device(s) detected on the network.  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+*A terminal-cast GIF isn't shipped in this repo to keep it dependency-free —
+record your own in ~30 seconds and drop it here:*
+
+```bash
+npm install -g terminalizer
+terminalizer record demo
+terminalizer render demo -o demo.gif
+```
+
+*Then reference it at the top of this README as `![demo](demo.gif)`.*
+
+</div>
+
+---
+
+## 📖 Overview
+
+`SYJ-Nexus-Sentinel-Audit` periodically reads your system's ARP/neighbor
+table, fingerprints every device it sees (MAC, IP, hostname), checks each
+one against a `whitelist.json` you control, and writes a daily
+`security_audit.json` report of connections, status changes, and anomalies.
+
+No agents on other machines. No cloud dependency. No heavy SIEM stack —
+just a local process and a local database, doing one job well.
+
+## ✨ Highlights
+
+| Feature | Description |
+|---|---|
+| 🧩 **Zero native binaries** | Pure TypeScript/JavaScript. Storage runs on Node's built-in `node:sqlite` via [Drizzle ORM](https://orm.drizzle.team/) — no `node-gyp`, no prebuilt binary downloads |
+| 🌍 **Truly cross-platform** | Linux, Windows, macOS, and Android (Termux) — auto-detects `ip neigh` or `arp -a` |
+| 🔄 **Automatic fallback** | Node < 22.5 without `node:sqlite`? It transparently switches to a dependency-free JSON store with the same schema shape |
+| 🛡️ **Whitelist-driven detection** | Anything absent from `whitelist.json` is flagged `unknown` and logged as a warning-severity event |
+| 📊 **Structured audit trail** | Every scan, new device, IP change, and anomaly rolls into a daily JSON report, ready for your own alerting pipeline |
+| ⚡ **Low-resource footprint** | No SIEM, no containers, no external database — runs comfortably on a phone |
+
+## ⚙️ Requirements
+
+- Node.js **18+** (Node **22.5+** recommended, to use the built-in SQLite backend — earlier versions auto-fall back to the JSON store)
+- One of `ip` (iproute2) or `arp` (net-tools) available on the host
+
+## 🚀 Installation
 
 ```bash
 git clone https://github.com/SHalimoosavi/SYJ-Nexus-Sentinel-Audit.git
@@ -54,7 +100,7 @@ npm run build
 
 Then edit `whitelist.json` manually before starting the daemon.
 
-## Configuring your whitelist
+## 🔐 Configuring your whitelist
 
 Edit `whitelist.json` in the project root:
 
@@ -69,7 +115,7 @@ MAC addresses are matched case-insensitively. Anything on the network that
 isn't listed here is tracked with `status: "unknown"` and generates a
 warning-level event the first time it's seen.
 
-## Running
+## ▶️ Running
 
 ```bash
 # One-off scan (useful for testing / cron jobs)
@@ -85,9 +131,10 @@ node dist/monitor.js --interval=30
 Each cycle updates `data/sentinel.db` (or `data/sentinel.json` on the
 fallback backend) and regenerates `logs/security_audit.json`.
 
-## Running as a background process / service
+## 🧰 Running as a background process / service
 
-### Linux & Termux — `nohup` (simplest)
+<details>
+<summary><strong>Linux & Termux — <code>nohup</code> (simplest)</strong></summary>
 
 ```bash
 nohup node dist/monitor.js > logs/daemon.log 2>&1 &
@@ -99,8 +146,10 @@ Stop it with:
 ```bash
 kill "$(cat sentinel.pid)"
 ```
+</details>
 
-### Linux & Termux — `pm2` (recommended for long-running use)
+<details>
+<summary><strong>Linux & Termux — <code>pm2</code> (recommended for long-running use)</strong></summary>
 
 ```bash
 npm install -g pm2
@@ -108,8 +157,10 @@ pm2 start dist/monitor.js --name syj-sentinel
 pm2 save
 pm2 logs syj-sentinel
 ```
+</details>
 
-### Termux — run at boot
+<details>
+<summary><strong>Termux — run at boot</strong></summary>
 
 Install [Termux:Boot](https://wiki.termux.com/wiki/Termux:Boot) from
 F-Droid, then create `~/.termux/boot/start-sentinel.sh`:
@@ -123,8 +174,10 @@ nohup node dist/monitor.js > logs/daemon.log 2>&1 &
 ```bash
 chmod +x ~/.termux/boot/start-sentinel.sh
 ```
+</details>
 
-### Linux — systemd (persistent service)
+<details>
+<summary><strong>Linux — systemd (persistent service)</strong></summary>
 
 Create `/etc/systemd/system/syj-sentinel.service`:
 
@@ -149,8 +202,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now syj-sentinel
 sudo journalctl -u syj-sentinel -f
 ```
+</details>
 
-### Windows — background task
+<details>
+<summary><strong>Windows — background task</strong></summary>
 
 ```powershell
 Start-Process -NoNewWindow node "dist/monitor.js" -RedirectStandardOutput logs\daemon.log
@@ -158,8 +213,9 @@ Start-Process -NoNewWindow node "dist/monitor.js" -RedirectStandardOutput logs\d
 
 Or register it as a Scheduled Task set to run at logon for a persistent
 background daemon.
+</details>
 
-## Output: `logs/security_audit.json`
+## 📄 Output: `logs/security_audit.json`
 
 Regenerated on every scan cycle. Shape:
 
@@ -187,7 +243,7 @@ Generate a report on demand without waiting for the next cycle:
 npm run report
 ```
 
-## Project structure
+## 🗂️ Project structure
 
 ```
 SYJ-Nexus-Sentinel-Audit/
@@ -209,7 +265,7 @@ SYJ-Nexus-Sentinel-Audit/
 └── LICENSE                  # MIT
 ```
 
-## How device tracking works
+## 🔍 How device tracking works
 
 1. Each scan cycle runs the best available OS command (`ip neigh show`, then
    `arp -a` as a fallback) and extracts `(ip, mac, hostname?)` tuples.
@@ -223,7 +279,7 @@ SYJ-Nexus-Sentinel-Audit/
 5. `logs/security_audit.json` is rebuilt from the event log and device
    table after every cycle.
 
-## Security notes
+## 🛡️ Security notes
 
 - This tool reads local ARP/neighbor tables only — it does not perform
   active network scanning, packet capture, or intrusion beyond what the
@@ -234,6 +290,45 @@ SYJ-Nexus-Sentinel-Audit/
 - Review `logs/security_audit.json` regularly, or wire it into your own
   alerting pipeline.
 
-## License
+## 🌐 Part of the Sayanjali Nexus ecosystem
 
-MIT — see [LICENSE](LICENSE).
+This tool is one piece of a broader set of open-source and production
+projects built by the same team, spanning AI automation, OSINT, and
+applied security tooling:
+
+| Project | Description |
+|---|---|
+| **SYJ NexusIntel AI** | Flagship intelligence platform — FastAPI backend + Next.js frontend, in active hardening toward a v1.0.0 commercial release |
+| **SAYANJALI OSINT** | Multi-source geolocation and reconnaissance toolkit |
+| **SYJ Mail Intelligence AI** | Local-first, Ollama-powered email triage and auto-reply system |
+| **SYJ Scholar AI** | AI research and knowledge-retrieval assistant |
+| **SYJ GitHub Optimizer** | Node.js/Octokit tool for repository and profile optimization |
+| **SYJ AI** | Autonomous AI software-engineering agent (Termux-first, open source) |
+| **Sayanjali: Wisdom of the 14** | Multilingual hadith research platform with strict theological source constraints |
+
+Browse the full catalog at **[github.com/SHalimoosavi](https://github.com/SHalimoosavi)**.
+
+## 👤 Author
+
+**Syed Ali Hasan Moosavi** ([@SHalimoosavi](https://github.com/SHalimoosavi))
+Founder & Managing Director, **Sayanjali Nexus Private Limited**
+
+- GitHub: [github.com/SHalimoosavi](https://github.com/SHalimoosavi)
+- Contact: [cto@sayanjalinexus.com](mailto:cto@sayanjalinexus.com)
+
+Contributions, issues, and feature requests are welcome — see the
+[issues page](https://github.com/SHalimoosavi/SYJ-Nexus-Sentinel-Audit/issues).
+
+## 📜 License
+
+MIT — see [LICENSE](LICENSE). Free to use, modify, and distribute, including
+commercially, with attribution.
+
+---
+
+<div align="center">
+
+If this tool is useful to you, consider ⭐ starring the repo — it helps
+others find it.
+
+</div>
