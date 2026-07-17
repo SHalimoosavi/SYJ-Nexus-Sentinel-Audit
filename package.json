@@ -1,0 +1,44 @@
+{
+  "name": "syj-nexus-sentinel-audit",
+  "version": "1.0.0",
+  "description": "Lightweight, portable, open-source security observability daemon for local network device tracking and anomaly detection.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Sayanjali Nexus",
+  "homepage": "https://github.com/SHalimoosavi/SYJ-Nexus-Sentinel-Audit",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "dist/monitor.js",
+  "bin": {
+    "syj-sentinel": "dist/monitor.js"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/monitor.js",
+    "dev": "tsx src/monitor.ts",
+    "report": "node dist/report.js",
+    "db:generate": "drizzle-kit generate",
+    "postinstall": "node -e \"try{require('fs').mkdirSync('data',{recursive:true});require('fs').mkdirSync('logs',{recursive:true})}catch(e){}\""
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "drizzle-kit": "^0.28.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "security",
+    "observability",
+    "network-monitor",
+    "arp",
+    "device-fingerprint",
+    "sqlite",
+    "drizzle",
+    "termux",
+    "cross-platform"
+  ]
+}
