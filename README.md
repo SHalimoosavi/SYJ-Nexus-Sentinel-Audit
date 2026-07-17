@@ -279,6 +279,23 @@ SYJ-Nexus-Sentinel-Audit/
 5. `logs/security_audit.json` is rebuilt from the event log and device
    table after every cycle.
 
+## 📱 Android / Termux
+
+Android 10+ may restrict access to Netlink sockets and `/proc/net/arp`
+for unprivileged applications.
+
+If network discovery reports:
+
+- `Cannot bind netlink socket: Permission denied`
+- `/proc/net/arp: Permission denied`
+
+this is caused by Android security restrictions, not by SYJ Nexus Sentinel
+Audit.
+
+The application continues running and logging normally. Full neighbor
+discovery is available on Linux distributions, WSL, macOS, and rooted
+Android devices.
+
 ## 🛡️ Security notes
 
 - This tool reads local ARP/neighbor tables only — it does not perform
